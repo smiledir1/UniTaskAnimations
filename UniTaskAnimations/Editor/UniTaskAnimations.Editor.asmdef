@@ -1,0 +1,19 @@
+{
+    "name": "UniTaskAnimations.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b700a35f1f864b1438e4083c8560325e",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

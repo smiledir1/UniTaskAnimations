@@ -1,0 +1,14 @@
+{
+    "name": "com.loverocket.unitaskanimations",
+    "displayName": "UniTask Anamitions",
+    "author": { "name": "Vladimir Makarov", "url": "https://loverocket.top/" },
+    "version": "1.0.0",
+    "unity": "2018.4",
+    "description": "Visualize animations with UniTask",
+    "keywords": [ "async/await", "async", "Task", "UniTask" , "Animations" "Animation"],
+    "license": "MIT",
+    "category": "Animation",
+    "dependencies": {
+        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
+    }
+}
