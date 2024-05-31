@@ -21,7 +21,7 @@ namespace Common.UniTaskAnimations.Editor
 
         private void DrawButtons(Rect propertyRect, SerializedProperty property)
         {
-            var buttonCount = 2;
+            var buttonCount = 3;
             var buttonWidth = propertyRect.width / buttonCount;
             var x = propertyRect.x;
             var y = propertyRect.yMax - LineHeight - Space;
@@ -34,6 +34,11 @@ namespace Common.UniTaskAnimations.Editor
             var buttonRectToComponents = new Rect(buttonXToComponents, y, buttonWidth, LineHeight);
             if (GUI.Button(buttonRectToComponents, "Make Tweens To Components"))
                 MakeTweensToComponents(property);
+
+            var buttonXFindComponents = buttonXToComponents + buttonWidth;
+            var buttonRectFindComponents = new Rect(buttonXFindComponents, y, buttonWidth, LineHeight);
+            if (GUI.Button(buttonRectFindComponents, "Find Components"))
+                FindComponents(property);
         }
 
         private void MakeTweensFromComponents(SerializedProperty property)
@@ -45,6 +50,7 @@ namespace Common.UniTaskAnimations.Editor
                 groupTween.Tweens.Add(iTween);
                 Object.DestroyImmediate(component);
             }
+
             groupTween.Components.Clear();
         }
 
@@ -61,6 +67,19 @@ namespace Common.UniTaskAnimations.Editor
             }
 
             groupTween.Tweens.Clear();
+        }
+
+        private void FindComponents(SerializedProperty property)
+        {
+            if (property.managedReferenceValue is not GroupTween groupTween) return;
+            if (property.serializedObject?.targetObject is not Component target) return;
+            var components = target.GetComponentsInChildren<TweenComponent>();
+            foreach (var component in components)
+            {
+                if (component.Tween is not ITween iTween) continue;
+                if (groupTween.Components.Contains(component) || target == component) continue;
+                groupTween.Components.Add(component);
+            }
         }
     }
 }
