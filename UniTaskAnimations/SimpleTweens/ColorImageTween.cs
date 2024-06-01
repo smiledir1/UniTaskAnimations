@@ -82,7 +82,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
             Color startColor;
             Color endColor;
-            AnimationCurve reverseCurve;
+            AnimationCurve curve;
             var curTweenTime = TweenTime;
             if (Loop == LoopType.PingPong) curTweenTime /= 2;
             var time = 0f;
@@ -92,13 +92,13 @@ namespace Common.UniTaskAnimations.SimpleTweens
             {
                 startColor = toColor;
                 endColor = fromColor;
-                reverseCurve = ReverseCurve;
+                curve = ReverseCurve;
             }
             else
             {
                 startColor = fromColor;
                 endColor = toColor;
-                reverseCurve = AnimationCurve;
+                curve = AnimationCurve;
             }
 
             if (startFromCurrentValue)
@@ -127,11 +127,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     time += GetDeltaTime();
 
                     var normalizeTime = time / curTweenTime;
-                    var lerpTime = reverseCurve?.Evaluate(normalizeTime) ?? normalizeTime;
-                    var lerpValue = Color.LerpUnclamped(startColor, endColor, lerpTime);
-
-                    if (tweenGraphic == null) return;
-                    tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(lerpValue) : lerpValue;
+                    GoToValue(startColor, endColor, curve, normalizeTime);
                     if (cancellationToken.IsCancellationRequested) return;
                     await UniTask.Yield();
                 }
@@ -171,6 +167,12 @@ namespace Common.UniTaskAnimations.SimpleTweens
             tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(toColor) : toColor;
         }
 
+        public override void SetTimeValue(float value)
+        {
+            if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<Graphic>();
+            GoToValue(fromColor, toColor, AnimationCurve, value);
+        }
+
         public void SetColor(Color from, Color to)
         {
             if (ignoreAlpha)
@@ -188,6 +190,15 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
         private Color GetIgnoreAlphaColor(Color color) =>
             new(color.r, color.g, color.b, tweenGraphic.color.a);
+
+        private void GoToValue(Color startColor, Color endColor, AnimationCurve curve, float value)
+        {
+            var lerpTime = curve?.Evaluate(value) ?? value;
+            var lerpValue = Color.LerpUnclamped(startColor, endColor, lerpTime);
+
+            if (tweenGraphic == null) return;
+            tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(lerpValue) : lerpValue;
+        }
 
         #endregion /Animation
 

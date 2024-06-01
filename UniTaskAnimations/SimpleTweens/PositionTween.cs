@@ -155,10 +155,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     time += GetDeltaTime();
 
                     var normalizeTime = time / curTweenTime;
-                    var lerpTime = curve?.Evaluate(normalizeTime) ?? normalizeTime;
-                    var lerpValue = Vector3.LerpUnclamped(startPosition, endPosition, lerpTime);
-
-                    GoToPosition(lerpValue);
+                    GoToValue(startPosition, endPosition, curve, normalizeTime);
                     if (cancellationToken.IsCancellationRequested) return;
                     await UniTask.Yield();
                 }
@@ -198,6 +195,21 @@ namespace Common.UniTaskAnimations.SimpleTweens
             GoToPosition(toPosition);
         }
 
+        public override void SetTimeValue(float value)
+        {
+            RectTransform ??= tweenObject.transform as RectTransform;
+            if (positionType == PositionType.Target)
+            {
+                var from = fromTarget.position;
+                var to = toTarget.position;
+                GoToValue(from, to, AnimationCurve, value);
+            }
+            else
+            {
+                GoToValue(FromPosition, toPosition, AnimationCurve, value);
+            }
+        }
+
         public void SetPositions(Vector3 from, Vector3 to, PositionType curPositionType)
         {
             positionType = curPositionType;
@@ -214,6 +226,14 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 PositionType.Anchored => RectTransform.anchoredPosition,
                 _ => Vector3.zero
             };
+        }
+        
+        private void GoToValue(Vector3 startPosition, Vector3 endPosition, AnimationCurve curve, float value)
+        {
+            var lerpTime = curve?.Evaluate(value) ?? value;
+            var lerpValue = Vector3.LerpUnclamped(startPosition, endPosition, lerpTime);
+
+            GoToPosition(lerpValue);
         }
 
         #endregion /Animation

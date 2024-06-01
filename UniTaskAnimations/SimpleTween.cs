@@ -49,6 +49,7 @@ namespace Common.UniTaskAnimations
         public abstract void ResetValues();
 
         public abstract void EndValues();
+        public abstract void SetTimeValue(float value);
 
         #endregion /Abstract
 

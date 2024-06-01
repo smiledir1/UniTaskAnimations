@@ -111,11 +111,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     time += GetDeltaTime();
 
                     var normalizeTime = time / curTweenTime;
-                    var lerpTime = curve?.Evaluate(normalizeTime) ?? normalizeTime;
-                    var lerpValue = Mathf.LerpUnclamped(startOpacity, endOpacity, lerpTime);
-
-                    if (tweenObjectRenderer == null) return;
-                    tweenObjectRenderer.alpha = lerpValue;
+                    GoToValue(startOpacity, endOpacity, curve, normalizeTime);
                     if (cancellationToken.IsCancellationRequested) return;
                     await UniTask.Yield();
                 }
@@ -156,10 +152,25 @@ namespace Common.UniTaskAnimations.SimpleTweens
             tweenObjectRenderer.alpha = toOpacity;
         }
 
+        public override void SetTimeValue(float value)
+        {
+            if (tweenObjectRenderer == null) tweenObjectRenderer = TweenObject.GetComponent<CanvasGroup>();
+            GoToValue(FromOpacity, ToOpacity, AnimationCurve, value);
+        }
+
         public void SetTransparency(float from, float to)
         {
             fromOpacity = from;
             toOpacity = to;
+        }
+
+        private void GoToValue(float startOpacity, float endOpacity, AnimationCurve curve, float value)
+        {
+            var lerpTime = curve?.Evaluate(value) ?? value;
+            var lerpValue = Mathf.LerpUnclamped(startOpacity, endOpacity, lerpTime);
+
+            if (tweenObjectRenderer == null) return;
+            tweenObjectRenderer.alpha = lerpValue;
         }
 
         #endregion /Animation

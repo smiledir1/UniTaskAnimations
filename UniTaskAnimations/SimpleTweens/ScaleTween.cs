@@ -106,10 +106,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     time += GetDeltaTime();
 
                     var normalizeTime = time / curTweenTime;
-                    var lerpTime = curve?.Evaluate(normalizeTime) ?? normalizeTime;
-                    var lerpValue = Vector3.LerpUnclamped(startScale, endScale, lerpTime);
-
-                    TweenObject.transform.localScale = lerpValue;
+                    GoToValue(startScale, endScale, curve, normalizeTime);
                     if (cancellationToken.IsCancellationRequested) return;
                     await UniTask.Yield();
                 }
@@ -118,7 +115,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 var lastKey = AnimationCurve.keys[lastKeyIndex];
                 var endValue = Vector3.LerpUnclamped(startScale, endScale, lastKey.value);
                 TweenObject.transform.localScale = endValue;
-             
+
                 time -= curTweenTime;
 
                 switch (Loop)
@@ -148,10 +145,23 @@ namespace Common.UniTaskAnimations.SimpleTweens
             TweenObject.transform.localScale = toScale;
         }
 
+        public override void SetTimeValue(float value)
+        {
+            GoToValue(FromScale, ToScale, AnimationCurve, value);
+        }
+
         public void SetScale(Vector3 from, Vector3 to)
         {
             fromScale = from;
             toScale = to;
+        }
+
+        private void GoToValue(Vector3 startScale, Vector3 endScale, AnimationCurve curve, float value)
+        {
+            var lerpTime = curve?.Evaluate(value) ?? value;
+            var lerpValue = Vector3.LerpUnclamped(startScale, endScale, lerpTime);
+
+            TweenObject.transform.localScale = lerpValue;
         }
 
         #endregion /Animation

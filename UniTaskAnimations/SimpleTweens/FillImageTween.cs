@@ -77,7 +77,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
             float startFill;
             float endFill;
-            AnimationCurve reverseCurve;
+            AnimationCurve curve;
             var curTweenTime = TweenTime;
             if (Loop == LoopType.PingPong) curTweenTime /= 2;
             var time = 0f;
@@ -87,13 +87,13 @@ namespace Common.UniTaskAnimations.SimpleTweens
             {
                 startFill = toFill;
                 endFill = fromFill;
-                reverseCurve = ReverseCurve;
+                curve = ReverseCurve;
             }
             else
             {
                 startFill = fromFill;
                 endFill = toFill;
-                reverseCurve = AnimationCurve;
+                curve = AnimationCurve;
             }
 
             if (startFromCurrentValue)
@@ -112,11 +112,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     time += GetDeltaTime();
 
                     var normalizeTime = time / curTweenTime;
-                    var lerpTime = reverseCurve?.Evaluate(normalizeTime) ?? normalizeTime;
-                    var lerpValue = Mathf.LerpUnclamped(startFill, endFill, lerpTime);
-
-                    if (tweenImage == null) return;
-                    tweenImage.fillAmount = lerpValue;
+                    GoToValue(startFill, endFill, curve, normalizeTime);
                     if (cancellationToken.IsCancellationRequested) return;
                     await UniTask.Yield();
                 }
@@ -156,11 +152,26 @@ namespace Common.UniTaskAnimations.SimpleTweens
             if (tweenImage == null) tweenImage = TweenObject.GetComponent<Image>();
             tweenImage.fillAmount = toFill;
         }
+        
+        public override void SetTimeValue(float value)
+        {
+            if (tweenImage == null) tweenImage = TweenObject.GetComponent<Image>();
+            GoToValue(FromFill, ToFill, AnimationCurve, value);
+        }
 
         public void SetFill(float from, float to)
         {
             fromFill = from;
             toFill = to;
+        }
+
+        private void GoToValue(float startFill, float endFill, AnimationCurve curve, float value)
+        {
+            var lerpTime = curve?.Evaluate(value) ?? value;
+            var lerpValue = Mathf.LerpUnclamped(startFill, endFill, lerpTime);
+
+            if (tweenImage == null) return;
+            tweenImage.fillAmount = lerpValue;
         }
 
         #endregion /Animation

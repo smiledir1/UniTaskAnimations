@@ -145,6 +145,10 @@ namespace Common.UniTaskAnimations.SimpleTweens
         public override void EndValues()
         {
         }
+        
+        public override void SetTimeValue(float value)
+        {
+        }
 
         public void SetPositions(Vector3 from, Vector3 to)
         {

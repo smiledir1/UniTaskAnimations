@@ -1,24 +1,57 @@
+using System;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Common.UniTaskAnimations.Editor
 {
     [CustomPropertyDrawer(typeof(GroupTween), true)]
     public class GroupTweenDrawer : TweenDrawer
     {
+        private float _currentSliderValue = -1f;
+        
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             base.OnGUI(rect, property, label);
 
             if (property.isExpanded)
             {
+                DrawProgress(rect, property);
                 DrawButtons(rect, property);
             }
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
-            base.GetPropertyHeight(property, label) + LinesHeight + Space;
+            base.GetPropertyHeight(property, label) + LinesHeight + LinesHeight + Space;
 
+        private void DrawProgress(Rect propertyRect, SerializedProperty property)
+        {
+            if (_currentSliderValue < 0f)
+            {
+                //TODO: get current time value
+                _currentSliderValue = 0f;
+            }
+            
+            var x = propertyRect.x;
+            var y = propertyRect.yMax - LineHeight - LineHeight - Space;
+            var progressWidth = propertyRect.width;
+            var progressRect = new Rect(x, y, progressWidth, LineHeight);
+            var sliderValue = EditorGUI.Slider(progressRect, _currentSliderValue, 0f, 1f);
+
+            if (Math.Abs(_currentSliderValue - sliderValue) > 0.0001f)
+            {
+                _currentSliderValue = sliderValue;
+                if (property.managedReferenceValue is GroupTween targetTween)
+                {
+                    foreach (var tween in targetTween.Tweens)
+                    {
+                        if (tween is not SimpleTween simpleTween) continue;
+                        simpleTween.SetTimeValue(_currentSliderValue);
+                    }
+                }
+            }
+        }
+        
         private void DrawButtons(Rect propertyRect, SerializedProperty property)
         {
             var buttonCount = 3;
@@ -40,7 +73,7 @@ namespace Common.UniTaskAnimations.Editor
             if (GUI.Button(buttonRectFindComponents, "Find Components"))
                 FindComponents(property);
         }
-
+        
         private void MakeTweensFromComponents(SerializedProperty property)
         {
             if (property.managedReferenceValue is not GroupTween groupTween) return;

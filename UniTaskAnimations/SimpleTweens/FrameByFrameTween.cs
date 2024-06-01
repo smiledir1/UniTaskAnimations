@@ -106,14 +106,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     time += GetDeltaTime();
 
                     var normalizeTime = time / curTweenTime;
-                    var lerpTime = curve?.Evaluate(normalizeTime) ?? normalizeTime;
-                    var lerpValue = Mathf.LerpUnclamped(startSprite, toSprite, lerpTime);
-
-                    if (tweenImage == null) return;
-                    var currentSpritePos = (int) (toSprite > startSprite
-                        ? Mathf.Ceil(lerpValue)
-                        : Mathf.Floor(lerpValue));
-                    tweenImage.sprite = sprites[currentSpritePos];
+                    GoToValue(startSprite, toSprite, curve, normalizeTime);
                     if (cancellationToken.IsCancellationRequested) return;
                     await UniTask.Yield();
                 }
@@ -151,10 +144,28 @@ namespace Common.UniTaskAnimations.SimpleTweens
             if (sprites == null || sprites.Count == 0) return;
             tweenImage.sprite = sprites[^1];
         }
+        
+        public override void SetTimeValue(float value)
+        {
+            if (sprites == null || sprites.Count == 0) return;
+            GoToValue(0, Sprites.Count - 1, AnimationCurve, value);
+        }
 
         public void SetSprites(List<Sprite> mainSprites)
         {
             sprites = mainSprites;
+        }
+
+        private void GoToValue(int startSprite, int endSprite, AnimationCurve curve, float value)
+        {
+            var lerpTime = curve?.Evaluate(value) ?? value;
+            var lerpValue = Mathf.LerpUnclamped(startSprite, endSprite, lerpTime);
+
+            if (tweenImage == null) return;
+            var currentSpritePos = (int) (endSprite > startSprite
+                ? Mathf.Ceil(lerpValue)
+                : Mathf.Floor(lerpValue));
+            tweenImage.sprite = sprites[currentSpritePos];
         }
 
         #endregion /Animation

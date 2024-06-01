@@ -28,6 +28,7 @@ namespace Common.UniTaskAnimations.Editor
         private int _popupTweenIndex;
         private string _changedType;
         private IBaseTween _changedTween;
+        private float _currentSliderValue = -1f;
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
@@ -49,6 +50,7 @@ namespace Common.UniTaskAnimations.Editor
                 FillTweenObject(property);
                 propertyRect.y += DrawChooseTween(propertyRect);
                 propertyRect.y += DrawSetTweenButtons(propertyRect, property);
+                propertyRect.y += DrawProgress(propertyRect, property);
                 propertyRect.y += DrawMainProperties(propertyRect, property);
                 propertyRect.y += DrawTweenProperties(propertyRect, property, label);
             }
@@ -121,26 +123,49 @@ namespace Common.UniTaskAnimations.Editor
             {
                 TargetTween?.StartAnimation().Forget();
             }
-            
+
             x += buttonWidth;
             buttonRect = new Rect(x, y, buttonWidth, LineHeight);
             if (GUI.Button(buttonRect, "Stop"))
             {
                 TargetTween?.StopAnimation().Forget();
             }
-            
+
             x += buttonWidth;
             buttonRect = new Rect(x, y, buttonWidth, LineHeight);
             if (GUI.Button(buttonRect, "Reset"))
             {
                 TargetTween?.ResetValues();
             }
-            
+
             x += buttonWidth;
             buttonRect = new Rect(x, y, buttonWidth, LineHeight);
             if (GUI.Button(buttonRect, "End"))
             {
                 TargetTween?.EndValues();
+            }
+
+            return LineHeight;
+        }
+
+        private float DrawProgress(Rect propertyRect, SerializedProperty property)
+        {
+            if (_currentSliderValue < 0f)
+            {
+                //TODO: get current time value
+                _currentSliderValue = 0f;
+            }
+            
+            var x = propertyRect.x;
+            var y = propertyRect.yMin;
+            var progressWidth = propertyRect.width;
+            var progressRect = new Rect(x, y, progressWidth, LineHeight);
+            var sliderValue = EditorGUI.Slider(progressRect, _currentSliderValue, 0f, 1f);
+
+            if (Math.Abs(_currentSliderValue - sliderValue) > 0.0001f)
+            {
+                _currentSliderValue = sliderValue;
+                TargetTween?.SetTimeValue(_currentSliderValue);
             }
 
             return LineHeight;
@@ -217,11 +242,11 @@ namespace Common.UniTaskAnimations.Editor
             var buttonWidth = _popupTweenIndex == 0 ? propertyRect.width * 3 / 8 : propertyRect.width * 3 / 16;
             var buttonRect = new Rect(buttonX, y, buttonWidth, LineHeight);
             if (GUI.Button(buttonRect, "Set")) _changedType = _inheredTypes[_popupTweenIndex];
-            
+
             var helpBoxX = buttonX + buttonWidth;
             var helpBoxWidth = _popupTweenIndex == 0 ? 0f : propertyRect.width * 3 / 16;
             var helpBoxRect = new Rect(helpBoxX, y, helpBoxWidth, LineHeight);
-            EditorGUI.HelpBox(helpBoxRect,"Set Type", MessageType.Warning);
+            EditorGUI.HelpBox(helpBoxRect, "Set Type", MessageType.Warning);
 
             return LineHeight;
         }

@@ -106,10 +106,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     time += GetDeltaTime();
 
                     var normalizeTime = time / curTweenTime;
-                    var lerpTime = curve?.Evaluate(normalizeTime) ?? normalizeTime;
-                    var lerpValue = Vector3.LerpUnclamped(startRotation, endRotation, lerpTime);
-
-                    if (TweenObject != null) TweenObject.transform.eulerAngles = lerpValue;
+                   GoToValue(startRotation, endRotation, curve, normalizeTime);
                     if (cancellationToken.IsCancellationRequested) return;
                     await UniTask.Yield();
                 }
@@ -146,11 +143,24 @@ namespace Common.UniTaskAnimations.SimpleTweens
         {
             TweenObject.transform.eulerAngles = toRotation;
         }
+        
+        public override void SetTimeValue(float value)
+        {
+            GoToValue(FromRotation, ToRotation, AnimationCurve, value);
+        }
 
         public void SetRotation(Vector3 from, Vector3 to)
         {
             fromRotation = from;
             toRotation = to;
+        }
+
+        private void GoToValue(Vector3 startRotation, Vector3 endRotation, AnimationCurve curve, float value)
+        {
+            var lerpTime = curve?.Evaluate(value) ?? value;
+            var lerpValue = Vector3.LerpUnclamped(startRotation, endRotation, lerpTime);
+
+            if (TweenObject != null) TweenObject.transform.eulerAngles = lerpValue;
         }
 
         #endregion /Animation

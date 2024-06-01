@@ -262,6 +262,12 @@ namespace Common.UniTaskAnimations.SimpleTweens
             RectTransform ??= tweenObject.transform as RectTransform;
             GoToPosition(positions[^1]);
         }
+        
+        public override void SetTimeValue(float value)
+        {
+            RectTransform ??= tweenObject.transform as RectTransform;
+            GoToValue(_curvePoints, _linesLens, AnimationCurve, value);
+        }
 
         public void SetPositions(
             PositionType curPositionType,
@@ -284,6 +290,32 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 PositionType.Anchored => RectTransform.anchoredPosition,
                 _ => Vector3.zero
             };
+        }
+        
+        private void GoToValue(Vector3[] points, float[] lens, AnimationCurve curve, float value)
+        {
+            if (points.Length < 2) return;
+            var cur = 1;
+            var lerpTime = curve?.Evaluate(value) ?? value;
+
+            for (var i = cur; i < lens.Length; i++)
+            {
+                if (lens[i] < lerpTime) continue;
+                cur = i;
+                break;
+            }
+
+            var startPoint = points[cur - 1];
+            var toPoint = points[cur];
+
+            var startLen = lens[cur - 1];
+            var endLen = lens[cur];
+
+
+            var valueTime = (lerpTime - startLen) / (endLen - startLen);
+
+            var lerpValue = Vector3.LerpUnclamped(startPoint, toPoint, valueTime);
+            GoToPosition(lerpValue);
         }
 
         #endregion /Animation
