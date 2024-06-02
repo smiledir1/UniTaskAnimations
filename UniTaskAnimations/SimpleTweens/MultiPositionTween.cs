@@ -487,7 +487,26 @@ namespace Common.UniTaskAnimations.SimpleTweens
         [UnityEditor.DrawGizmo(UnityEditor.GizmoType.NonSelected | UnityEditor.GizmoType.Selected)]
         private static void OnDrawGizmo(TweenComponent component, UnityEditor.GizmoType gizmoType)
         {
-            if (component.Tween is not MultiPositionTween multiPositionTween) return;
+            if (component.Tween is MultiPositionTween multiPositionTween)
+            {
+                DrawGizmos(multiPositionTween);
+                return;
+            }
+            
+            if (component.Tween is GroupTween groupTween)
+            {
+                foreach (var tween in groupTween.Tweens)
+                {
+                    if (tween is MultiPositionTween posTween)
+                    {
+                        DrawGizmos(posTween);
+                    }
+                }
+            }
+        }
+
+        private static void DrawGizmos(MultiPositionTween multiPositionTween)
+        {
             if (multiPositionTween.Precision < 0.001f) return;
             if (multiPositionTween.Positions.Count < 2) return;
             if (multiPositionTween._curvePoints == null) return;
