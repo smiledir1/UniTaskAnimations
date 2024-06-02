@@ -116,6 +116,8 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
 
             return y - propertyRect.y;
         }
+        
+        protected override float DrawTweenPropertiesHeight(SerializedProperty property) => LineHeight * 9;
 
         private void FromGoToPosition()
         {

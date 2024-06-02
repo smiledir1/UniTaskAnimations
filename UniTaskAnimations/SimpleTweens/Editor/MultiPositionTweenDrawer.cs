@@ -73,6 +73,32 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
             return y - propertyRect.y;
         }
 
+        protected override float DrawTweenPropertiesHeight(SerializedProperty property)
+        {
+            var height = 0f;
+            var positionTypeProperty = property.FindPropertyRelative("positionType");
+            if (positionTypeProperty.intValue == (int) PositionType.Target)
+            {
+                var positionsProperty = property.FindPropertyRelative("targets");
+                height += EditorGUI.GetPropertyHeight(positionsProperty);
+            }
+            else
+            {
+                var positionsProperty = property.FindPropertyRelative("positions");
+                height += EditorGUI.GetPropertyHeight(positionsProperty);
+                height += LineHeight;
+            }
+
+            if (TargetTween is MultiPositionTween multiPositionTween &&
+                multiPositionTween.LineType != MultiLineType.Line)
+            {
+                height += LineHeight * 2;
+            }
+
+            height += LineHeight * 4;
+            return height;
+        }
+
         private void AddCurrentPosition()
         {
             if (TargetTween is not MultiPositionTween multiPositionTween) return;

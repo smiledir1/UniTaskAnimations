@@ -29,11 +29,13 @@ namespace Common.UniTaskAnimations.Editor
         private string _changedType;
         private IBaseTween _changedTween;
         private float _currentSliderValue = -1f;
+        private string _gizmosSizeKey;
+        private float _gizmosSizeOldValue;
 
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             Initialize();
-
+            CheckGizmosSize();
             _changedType = null;
             _changedTween = null;
 
@@ -62,7 +64,21 @@ namespace Common.UniTaskAnimations.Editor
             if (_changedTween != null) ChangeTween(_changedTween, property);
         }
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => PropertyHeight;
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            if (property.isExpanded)
+            {
+                var height = LineHeight;
+                height += LineHeight; // DrawChooseTween
+                height += LineHeight; // DrawSetTweenButtons
+                height += LineHeight; // DrawProgress
+                height += 6 * LineHeight; // DrawMainProperties
+                height += DrawTweenPropertiesHeight(property); // DrawTweenProperties
+                return height;
+            }
+
+            return LineHeight;
+        }
 
         private void MakeTweenLabel(SerializedProperty property, GUIContent label)
         {
@@ -155,7 +171,7 @@ namespace Common.UniTaskAnimations.Editor
                 //TODO: get current time value
                 _currentSliderValue = 0f;
             }
-            
+
             var x = propertyRect.x;
             var y = propertyRect.yMin;
             var progressWidth = propertyRect.width;
@@ -217,6 +233,22 @@ namespace Common.UniTaskAnimations.Editor
             }
 
             _inheredTypes.Compile();
+            
+            //TODO: move to settings
+            if (Math.Abs(SimpleTween.GizmosSize - (-100f)) < 1f)
+            {
+                SimpleTween.GizmosSize = EditorPrefs.GetFloat(_gizmosSizeKey, 10f);
+                _gizmosSizeOldValue = SimpleTween.GizmosSize;
+            }
+        }
+
+        private void CheckGizmosSize()
+        {
+            if (Mathf.Abs(SimpleTween.GizmosSize - _gizmosSizeOldValue) > 0.01f)
+            {
+                EditorPrefs.SetFloat(_gizmosSizeKey, SimpleTween.GizmosSize);
+                _gizmosSizeOldValue = SimpleTween.GizmosSize;
+            }
         }
 
         private float DrawChooseTween(Rect propertyRect)
@@ -335,6 +367,8 @@ namespace Common.UniTaskAnimations.Editor
             SerializedProperty property,
             GUIContent label) =>
             0f;
+
+        protected virtual float DrawTweenPropertiesHeight(SerializedProperty property) => 0f;
     }
 }
 #endif

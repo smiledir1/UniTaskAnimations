@@ -11,6 +11,9 @@ namespace Common.UniTaskAnimations
     {
         [SerializeField]
         private bool parallel;
+        
+        [SerializeField]
+        private float startDelay;
 
         [SerializeReference]
         private List<ITween> _tweens = new();
@@ -21,6 +24,7 @@ namespace Common.UniTaskAnimations
         public bool Parallel => parallel;
         public List<ITween> Tweens => _tweens;
         public List<TweenComponent> Components => components;
+        public float StartDelay => startDelay;
 
         private CancellationTokenSource _currentToken;
 
@@ -36,6 +40,7 @@ namespace Common.UniTaskAnimations
         {
             _currentToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             ResetValues();
+            await DelayAnimation(_currentToken.Token);
             if (Parallel)
             {
                 var tasks = new List<UniTask>();
@@ -106,6 +111,12 @@ namespace Common.UniTaskAnimations
             }
 
             return newTween;
+        }
+        
+        private async UniTask DelayAnimation(CancellationToken cancellationToken)
+        {
+            if (StartDelay > 0.001f)
+                await UniTask.Delay(TimeSpan.FromSeconds(StartDelay), cancellationToken: cancellationToken);
         }
     }
 }

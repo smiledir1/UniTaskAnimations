@@ -29,6 +29,15 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
             return y - propertyRect.y;
         }
 
+        protected override float DrawTweenPropertiesHeight(SerializedProperty property)
+        {
+            var height = 0f;
+            var spritesProperty = property.FindPropertyRelative("sprites");
+            height += EditorGUI.GetPropertyHeight(spritesProperty);
+            height += LineHeight * 3;
+            return height;
+        }
+
         private float DrawTweenProperties(Rect propertyRect, SerializedProperty property)
         {
             var x = propertyRect.x;

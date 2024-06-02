@@ -14,7 +14,7 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
         {
             var x = propertyRect.x;
             var y = propertyRect.y;
-            var width = propertyRect.width;
+            var width = EditorGUIUtility.currentViewWidth;
             var height = LineHeight;
 
             var partWidth = width * 2 / 3;
@@ -50,6 +50,8 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
 
             return y - propertyRect.y;
         }
+        
+        protected override float DrawTweenPropertiesHeight(SerializedProperty property) => LineHeight * 3;
 
         private void FromGotoScale()
         {

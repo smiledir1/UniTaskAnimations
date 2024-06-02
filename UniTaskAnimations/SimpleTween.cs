@@ -226,7 +226,10 @@ namespace Common.UniTaskAnimations
         #region Editor
 
 #if UNITY_EDITOR
-        public static float GizmosSize = 10f;
+        
+        //TODO: movo to settings
+        private static float _oldGizmosSize;
+        public static float GizmosSize = -100f;
         public virtual void OnGuiChange()
         {
             ReverseCurve = null;

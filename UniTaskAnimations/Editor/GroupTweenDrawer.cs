@@ -9,7 +9,7 @@ namespace Common.UniTaskAnimations.Editor
     public class GroupTweenDrawer : TweenDrawer
     {
         private float _currentSliderValue = -1f;
-        
+
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             base.OnGUI(rect, property, label);
@@ -22,7 +22,7 @@ namespace Common.UniTaskAnimations.Editor
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
-            base.GetPropertyHeight(property, label) + LinesHeight + LinesHeight + Space;
+            base.GetPropertyHeight(property, label) + LinesHeight * 2 + Space;
 
         private void DrawProgress(Rect propertyRect, SerializedProperty property)
         {
@@ -31,7 +31,7 @@ namespace Common.UniTaskAnimations.Editor
                 //TODO: get current time value
                 _currentSliderValue = 0f;
             }
-            
+
             var x = propertyRect.x;
             var y = propertyRect.yMax - LineHeight - LineHeight - Space;
             var progressWidth = propertyRect.width;
@@ -41,17 +41,79 @@ namespace Common.UniTaskAnimations.Editor
             if (Math.Abs(_currentSliderValue - sliderValue) > 0.0001f)
             {
                 _currentSliderValue = sliderValue;
+                //TODO: make for subGroups
                 if (property.managedReferenceValue is GroupTween targetTween)
                 {
-                    foreach (var tween in targetTween.Tweens)
+                    if (targetTween.Parallel)
                     {
-                        if (tween is not SimpleTween simpleTween) continue;
-                        simpleTween.SetTimeValue(_currentSliderValue);
+                        var maxTime = 0f;
+                        foreach (var tween in targetTween.Tweens)
+                        {
+                            if (tween is not SimpleTween simpleTween) continue;
+                            var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
+                            if (maxTime < fullTime) maxTime = fullTime;
+                        }
+
+                        var currentTime = maxTime * _currentSliderValue;
+                        foreach (var tween in targetTween.Tweens)
+                        {
+                            if (tween is not SimpleTween simpleTween) continue;
+                            if (currentTime < simpleTween.StartDelay)
+                            {
+                                simpleTween.SetTimeValue(0f);
+                                continue;
+                            }
+
+                            var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
+                            if (currentTime > fullTime)
+                            {
+                                simpleTween.SetTimeValue(1f);
+                                continue;
+                            }
+
+                            var currentValue = (currentTime - simpleTween.StartDelay) / simpleTween.TweenTime;
+                            simpleTween.SetTimeValue(currentValue);
+                        }
+                    }
+                    else
+                    {
+                        var maxTime = 0f;
+                        foreach (var tween in targetTween.Tweens)
+                        {
+                            if (tween is not SimpleTween simpleTween) continue;
+                            var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
+                            maxTime += fullTime;
+                        }
+
+                        var subTime = 0f;
+                        var currentTime = maxTime * _currentSliderValue;
+                        foreach (var tween in targetTween.Tweens)
+                        {
+                            if (tween is not SimpleTween simpleTween) continue;
+                            var startTweenTime = subTime;
+                            var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
+                            subTime += fullTime;
+                            if (currentTime < startTweenTime)
+                            {
+                                simpleTween.SetTimeValue(0f);
+                                continue;
+                            }
+
+                            if (currentTime > subTime)
+                            {
+                                simpleTween.SetTimeValue(1f);
+                                continue;
+                            }
+
+                            var currentValue = (currentTime - simpleTween.StartDelay - startTweenTime)
+                                               / simpleTween.TweenTime;
+                            simpleTween.SetTimeValue(currentValue);
+                        }
                     }
                 }
             }
         }
-        
+
         private void DrawButtons(Rect propertyRect, SerializedProperty property)
         {
             var buttonCount = 3;
@@ -73,10 +135,11 @@ namespace Common.UniTaskAnimations.Editor
             if (GUI.Button(buttonRectFindComponents, "Find Components"))
                 FindComponents(property);
         }
-        
+
         private void MakeTweensFromComponents(SerializedProperty property)
         {
             if (property.managedReferenceValue is not GroupTween groupTween) return;
+            if (property.serializedObject?.targetObject is not Component target) return;
             foreach (var component in groupTween.Components)
             {
                 if (component.Tween is not ITween iTween) continue;
@@ -85,11 +148,13 @@ namespace Common.UniTaskAnimations.Editor
             }
 
             groupTween.Components.Clear();
+            EditorUtility.SetDirty(target);
         }
 
         private void MakeTweensToComponents(SerializedProperty property)
         {
             if (property.managedReferenceValue is not GroupTween groupTween) return;
+            if (property.serializedObject?.targetObject is not Component target) return;
             foreach (var tween in groupTween.Tweens)
             {
                 if (tween is not SimpleTween simpleTween) continue;
@@ -100,6 +165,7 @@ namespace Common.UniTaskAnimations.Editor
             }
 
             groupTween.Tweens.Clear();
+            EditorUtility.SetDirty(target);
         }
 
         private void FindComponents(SerializedProperty property)
@@ -109,10 +175,12 @@ namespace Common.UniTaskAnimations.Editor
             var components = target.GetComponentsInChildren<TweenComponent>();
             foreach (var component in components)
             {
-                if (component.Tween is not ITween iTween) continue;
+                if (component.Tween is not ITween) continue;
                 if (groupTween.Components.Contains(component) || target == component) continue;
                 groupTween.Components.Add(component);
             }
+
+            EditorUtility.SetDirty(target);
         }
     }
 }

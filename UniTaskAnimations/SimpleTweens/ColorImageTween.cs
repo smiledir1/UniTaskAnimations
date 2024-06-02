@@ -120,6 +120,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
             while (curLoop)
             {
+                if (tweenGraphic == null) return;
                 tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(startColor) : startColor;
 
                 while (time < curTweenTime)
