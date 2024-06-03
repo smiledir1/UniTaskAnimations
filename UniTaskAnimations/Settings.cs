@@ -63,9 +63,9 @@ namespace Common.UniTaskAnimations
 
         public override void OnGUI(string searchContext)
         {
-            _settings.GizmosSize = EditorGUILayout.FloatField("GizmosSize", _settings.GizmosSize);
+            _settings.GizmosSize = EditorGUILayout.FloatField("Gizmos Size", _settings.GizmosSize);
             _settings.GizmosUpdateInterval =
-                EditorGUILayout.FloatField("GizmosSize", _settings.GizmosUpdateInterval);
+                EditorGUILayout.FloatField("Gizmos Update Interval", _settings.GizmosUpdateInterval);
         }
 
         public SettingsRegister(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
