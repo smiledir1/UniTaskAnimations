@@ -302,13 +302,13 @@ namespace Common.UniTaskAnimations.SimpleTweens
         public override void ResetValues()
         {
             RectTransform ??= tweenObject.transform as RectTransform;
-            GoToPosition(fromPosition);
+            GoToPosition(positionType != PositionType.Target ? fromPosition : fromTarget.position);
         }
 
         public override void EndValues()
         {
             RectTransform ??= tweenObject.transform as RectTransform;
-            GoToPosition(toPosition);
+            GoToPosition(positionType != PositionType.Target ? toPosition : toTarget.position);
         }
 
         public override void SetTimeValue(float value)
