@@ -1,8 +1,8 @@
 {
     "name": "com.loverocket.anim",
-    "displayName": "UniTask Anamitions",
+    "displayName": "UniTask Animations",
     "author": { "name": "Vladimir Makarov",  "email": "smiledir@mail.ru", "url": "https://loverocket.top" },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "unity": "2018.4",
     "description": "Visualize animations with UniTask",
     "keywords": [ "async/await", "async", "Task", "UniTask" , "Animations", "Animation"],
