@@ -68,11 +68,6 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
                 y += height;
             }
 
-            var gizmosHelperRect = new Rect(x, y, width, height);
-            SimpleTween.GizmosSize =
-                EditorGUI.FloatField(gizmosHelperRect, "Gizmos Size", SimpleTween.GizmosSize);
-            y += height;
-
             return y - propertyRect.y;
         }
 

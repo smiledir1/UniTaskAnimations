@@ -229,7 +229,6 @@ namespace Common.UniTaskAnimations
         
         //TODO: movo to settings
         private static float _oldGizmosSize;
-        public static float GizmosSize = -100f;
         public virtual void OnGuiChange()
         {
             ReverseCurve = null;

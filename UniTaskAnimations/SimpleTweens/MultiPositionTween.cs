@@ -571,7 +571,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
             Gizmos.color = Color.blue;
             for (var i = 0; i < multiPositionTween.Positions.Count; i++)
             {
-                Gizmos.DrawSphere(multiPositionTween.Positions[i], GizmosSize);
+                Gizmos.DrawSphere(multiPositionTween.Positions[i], Settings.Instance.GizmosSize);
             }
 
             Gizmos.color = Color.magenta;
@@ -611,7 +611,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 var pointPosition = parentPosition
                                     + GetScaledPosition(parentScale, point)
                                     + difScaled;
-                Gizmos.DrawSphere(pointPosition, GizmosSize);
+                Gizmos.DrawSphere(pointPosition, Settings.Instance.GizmosSize);
             }
 
             Gizmos.color = Color.magenta;
@@ -625,16 +625,16 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 multiPositionTween.Targets[^1] == null) return;
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(multiPositionTween.Targets[0].transform.position, GizmosSize);
+            Gizmos.DrawSphere(multiPositionTween.Targets[0].transform.position, Settings.Instance.GizmosSize);
             Gizmos.color = Color.red;
             for (var i = 1; i < multiPositionTween.Targets.Count - 1; i++)
             {
                 if (multiPositionTween.Targets[i] == null) continue;
-                Gizmos.DrawSphere(multiPositionTween.Targets[i].transform.position, GizmosSize);
+                Gizmos.DrawSphere(multiPositionTween.Targets[i].transform.position, Settings.Instance.GizmosSize);
             }
 
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere(multiPositionTween.Targets[^1].transform.position, GizmosSize);
+            Gizmos.DrawSphere(multiPositionTween.Targets[^1].transform.position, Settings.Instance.GizmosSize);
 
             Gizmos.color = Color.magenta;
             Gizmos.DrawLineStrip(multiPositionTween._curvePoints, false);

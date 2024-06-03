@@ -105,11 +105,6 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
             EditorGUI.PropertyField(precisionRect, precisionProperty);
             y += height;
 
-            var gizmosHelperRect = new Rect(x, y, width, height);
-            SimpleTween.GizmosSize =
-                EditorGUI.FloatField(gizmosHelperRect, "Gizmos Size", SimpleTween.GizmosSize);
-            y += height;
-
             var buttonRedrawRect = new Rect(x, y, width, height);
             if (GUI.Button(buttonRedrawRect, "Redraw")) TargetTween?.OnGuiChange();
             y += height;

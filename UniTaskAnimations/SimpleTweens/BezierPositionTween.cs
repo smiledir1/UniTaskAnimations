@@ -451,15 +451,18 @@ namespace Common.UniTaskAnimations.SimpleTweens
         #region Editor
 
 #if UNITY_EDITOR
+        private static float _oldGenerateTime;
+
         [UnityEditor.DrawGizmo(UnityEditor.GizmoType.NonSelected | UnityEditor.GizmoType.Selected)]
         private static void OnDrawGizmo(TweenComponent component, UnityEditor.GizmoType gizmoType)
         {
             if (component.Tween is BezierPositionTween bezierPositionTween)
             {
+                Recalculate(bezierPositionTween);
                 DrawGizmos(bezierPositionTween);
                 return;
             }
-            
+
             if (component.Tween is GroupTween groupTween)
             {
                 foreach (var tween in groupTween.Tweens)
@@ -470,6 +473,15 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     }
                 }
             }
+        }
+
+        private static void Recalculate(BezierPositionTween bezierPositionTween)
+        {
+            var curTime = (float) UnityEditor.EditorApplication.timeSinceStartup;
+            if (Application.isPlaying) return;
+            if (Math.Abs(curTime - _oldGenerateTime) < Settings.Instance.GizmosUpdateInterval) return;
+            _oldGenerateTime = curTime;
+            bezierPositionTween.CreatePoints();
         }
 
         private static void DrawGizmos(BezierPositionTween bezierPositionTween)
@@ -525,10 +537,10 @@ namespace Common.UniTaskAnimations.SimpleTweens
                            + GetScaledPosition(parentScale, bezierPositionTween._bezierPoints[i]);
             }
 
-            Gizmos.DrawSphere(b0, GizmosSize);
-            Gizmos.DrawSphere(b1, GizmosSize);
-            Gizmos.DrawSphere(b2, GizmosSize);
-            Gizmos.DrawSphere(b3, GizmosSize);
+            Gizmos.DrawSphere(b0, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b1, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b2, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b3, Settings.Instance.GizmosSize);
             Gizmos.DrawLineStrip(lines, false);
         }
 
@@ -545,10 +557,10 @@ namespace Common.UniTaskAnimations.SimpleTweens
             var b1 = b0 + bezierPositionTween.Bezier1Offset;
             var b2 = b3 + bezierPositionTween.Bezier2Offset;
 
-            Gizmos.DrawSphere(b0, GizmosSize);
-            Gizmos.DrawSphere(b1, GizmosSize);
-            Gizmos.DrawSphere(b2, GizmosSize);
-            Gizmos.DrawSphere(b3, GizmosSize);
+            Gizmos.DrawSphere(b0, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b1, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b2, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b3, Settings.Instance.GizmosSize);
             Gizmos.DrawLineStrip(bezierPositionTween._bezierPoints, false);
         }
 
@@ -589,10 +601,10 @@ namespace Common.UniTaskAnimations.SimpleTweens
                            + difScaled;
             }
 
-            Gizmos.DrawSphere(b0, GizmosSize);
-            Gizmos.DrawSphere(b1, GizmosSize);
-            Gizmos.DrawSphere(b2, GizmosSize);
-            Gizmos.DrawSphere(b3, GizmosSize);
+            Gizmos.DrawSphere(b0, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b1, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b2, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b3, Settings.Instance.GizmosSize);
             Gizmos.DrawLineStrip(lines, false);
         }
 
@@ -616,12 +628,12 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
             var currentGizmosColor = Gizmos.color;
             Gizmos.color = Color.blue;
-            Gizmos.DrawSphere(b0, GizmosSize);
+            Gizmos.DrawSphere(b0, Settings.Instance.GizmosSize);
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere(b3, GizmosSize);
+            Gizmos.DrawSphere(b3, Settings.Instance.GizmosSize);
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(b1, GizmosSize);
-            Gizmos.DrawSphere(b2, GizmosSize);
+            Gizmos.DrawSphere(b1, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(b2, Settings.Instance.GizmosSize);
             Gizmos.DrawLineStrip(bezierPositionTween._bezierPoints, false);
             Gizmos.color = currentGizmosColor;
         }

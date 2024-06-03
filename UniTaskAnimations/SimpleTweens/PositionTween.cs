@@ -300,8 +300,8 @@ namespace Common.UniTaskAnimations.SimpleTweens
                              + GetScaledPosition(parentScale, positionTween.ToPosition);
             Gizmos.DrawLine(fromPosition, toPosition);
 
-            Gizmos.DrawSphere(fromPosition, GizmosSize);
-            Gizmos.DrawSphere(toPosition, GizmosSize);
+            Gizmos.DrawSphere(fromPosition, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(toPosition, Settings.Instance.GizmosSize);
         }
 
         private static Vector3 GetScaledPosition(Vector3 scale, Vector3 position) =>
@@ -313,8 +313,8 @@ namespace Common.UniTaskAnimations.SimpleTweens
         {
             Gizmos.DrawLine(positionTween.FromPosition, positionTween.ToPosition);
 
-            Gizmos.DrawSphere(positionTween.FromPosition, GizmosSize);
-            Gizmos.DrawSphere(positionTween.ToPosition, GizmosSize);
+            Gizmos.DrawSphere(positionTween.FromPosition, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(positionTween.ToPosition, Settings.Instance.GizmosSize);
         }
 
         private static void DrawAnchoredPosition(PositionTween positionTween)
@@ -343,8 +343,8 @@ namespace Common.UniTaskAnimations.SimpleTweens
                              + difScaled;
 
             Gizmos.DrawLine(fromPosition, toPosition);
-            Gizmos.DrawSphere(fromPosition, GizmosSize);
-            Gizmos.DrawSphere(toPosition, GizmosSize);
+            Gizmos.DrawSphere(fromPosition, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(toPosition, Settings.Instance.GizmosSize);
         }
 
         private static void DrawTargetPosition(PositionTween positionTween)
@@ -354,8 +354,8 @@ namespace Common.UniTaskAnimations.SimpleTweens
             var toPosition = positionTween.toTarget.transform.position;
             Gizmos.DrawLine(fromPosition, toPosition);
 
-            Gizmos.DrawSphere(fromPosition, GizmosSize);
-            Gizmos.DrawSphere(toPosition, GizmosSize);
+            Gizmos.DrawSphere(fromPosition, Settings.Instance.GizmosSize);
+            Gizmos.DrawSphere(toPosition, Settings.Instance.GizmosSize);
         }
 
         public override void OnGuiChange()

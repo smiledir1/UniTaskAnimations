@@ -35,7 +35,7 @@ namespace Common.UniTaskAnimations.Editor
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             Initialize();
-            CheckGizmosSize();
+            
             _changedType = null;
             _changedTween = null;
 
@@ -233,22 +233,6 @@ namespace Common.UniTaskAnimations.Editor
             }
 
             _inheredTypes.Compile();
-            
-            //TODO: move to settings
-            if (Math.Abs(SimpleTween.GizmosSize - (-100f)) < 1f)
-            {
-                SimpleTween.GizmosSize = EditorPrefs.GetFloat(_gizmosSizeKey, 10f);
-                _gizmosSizeOldValue = SimpleTween.GizmosSize;
-            }
-        }
-
-        private void CheckGizmosSize()
-        {
-            if (Mathf.Abs(SimpleTween.GizmosSize - _gizmosSizeOldValue) > 0.01f)
-            {
-                EditorPrefs.SetFloat(_gizmosSizeKey, SimpleTween.GizmosSize);
-                _gizmosSizeOldValue = SimpleTween.GizmosSize;
-            }
         }
 
         private float DrawChooseTween(Rect propertyRect)
