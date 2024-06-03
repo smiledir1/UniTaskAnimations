@@ -41,5 +41,10 @@ namespace Common.UniTaskAnimations
         {
             _tween.StartAnimation().Forget();
         }
+        
+        public void StopAnimation()
+        {
+            _tween.StopAnimation().Forget();
+        }
     }
 }

@@ -66,6 +66,7 @@ namespace Common.UniTaskAnimations
             _settings.GizmosSize = EditorGUILayout.FloatField("Gizmos Size", _settings.GizmosSize);
             _settings.GizmosUpdateInterval =
                 EditorGUILayout.FloatField("Gizmos Update Interval", _settings.GizmosUpdateInterval);
+            if (GUI.changed) EditorUtility.SetDirty(_settings);
         }
 
         public SettingsRegister(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
