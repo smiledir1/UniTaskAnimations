@@ -21,6 +21,8 @@ namespace Common.UniTaskAnimations
         public Transform ParentObject => parentObject;
         public float PerObjectSecondsDelay => perObjectSecondsDelay;
         public ITween CurTween => Tween;
+        //TODO:
+        public bool IsActiveAnimation => false;
 
         private List<ITween> _animations = new();
 

@@ -25,6 +25,7 @@ namespace Common.UniTaskAnimations
         public List<ITween> Tweens => _tweens;
         public List<TweenComponent> Components => components;
         public float StartDelay => startDelay;
+        public bool IsActiveAnimation => _currentToken != null;
 
         private CancellationTokenSource _currentToken;
 
@@ -68,6 +69,8 @@ namespace Common.UniTaskAnimations
                         _currentToken.Token);
                 }
             }
+
+            _currentToken = null;
         }
 
         public UniTask StopAnimation()
@@ -77,6 +80,8 @@ namespace Common.UniTaskAnimations
             {
                 tween?.StopAnimation().Forget();
             }
+
+            _currentToken = null;
             return UniTask.CompletedTask;
         }
 

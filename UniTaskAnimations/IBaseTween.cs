@@ -6,14 +6,13 @@ namespace Common.UniTaskAnimations
 {
     public interface IBaseTween
     {
+        public bool IsActiveAnimation { get; }
         UniTask StartAnimation(
             bool reverse = false,
             bool startFromCurrentValue = false,
             CancellationToken cancellationToken = default);
-
         UniTask StopAnimation();
         void ResetValues();
-        
         void EndValues();
 
         public static IBaseTween Clone(IBaseTween tween, GameObject targetObject = null)
