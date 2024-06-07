@@ -453,6 +453,11 @@ namespace Common.UniTaskAnimations.SimpleTweens
 #if UNITY_EDITOR
         private static float _oldGenerateTime;
 
+        private void OnEnable()
+        {
+            CreatePoints();
+        }
+
         [UnityEditor.DrawGizmo(UnityEditor.GizmoType.NonSelected | UnityEditor.GizmoType.Selected)]
         private static void OnDrawGizmo(TweenComponent component, UnityEditor.GizmoType gizmoType)
         {
@@ -640,7 +645,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
         public override void OnGuiChange()
         {
-            if (tweenObject != null) RectTransform = tweenObject.transform as RectTransform;
+            RectTransform = tweenObject.transform as RectTransform;
             CreatePoints();
             base.OnGuiChange();
         }

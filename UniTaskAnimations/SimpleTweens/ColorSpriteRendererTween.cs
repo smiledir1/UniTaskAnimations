@@ -15,7 +15,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
         [SerializeField]
         private Color toColor;
-        
+
         [SerializeField]
         private bool ignoreAlpha;
 
@@ -23,7 +23,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
         private SpriteRenderer tweenGraphic;
 
         #endregion /View
-        
+
         #region Properties
 
         public Color FromColor => fromColor;
@@ -31,7 +31,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
         public SpriteRenderer TweenGraphic => tweenGraphic;
 
         #endregion
-        
+
         #region Constructor
 
         public ColorSpriteRendererTween()
@@ -61,8 +61,8 @@ namespace Common.UniTaskAnimations.SimpleTweens
         }
 
         #endregion
-        
-         #region Animation
+
+        #region Animation
 
         protected override async UniTask Tween(
             bool reverse = false,
@@ -161,7 +161,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
             if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<SpriteRenderer>();
             tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(toColor) : toColor;
         }
-        
+
         public override void SetTimeValue(float value)
         {
             if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<SpriteRenderer>();
@@ -173,10 +173,10 @@ namespace Common.UniTaskAnimations.SimpleTweens
             fromColor = from;
             toColor = to;
         }
-        
+
         private Color GetIgnoreAlphaColor(Color color) =>
             new(color.r, color.g, color.b, tweenGraphic.color.a);
-        
+
         private void GoToValue(Color startColor, Color endColor, AnimationCurve curve, float value)
         {
             var lerpTime = curve?.Evaluate(value) ?? value;
@@ -187,6 +187,20 @@ namespace Common.UniTaskAnimations.SimpleTweens
         }
 
         #endregion /Animation
+
+        #region Editor
+
+#if UNITY_EDITOR
+        
+        public override void OnGuiChange()
+        {
+            tweenGraphic = tweenObject.GetComponent<SpriteRenderer>();
+            base.OnGuiChange();
+        }
+
+#endif
+
+        #endregion
 
         #region Static
 

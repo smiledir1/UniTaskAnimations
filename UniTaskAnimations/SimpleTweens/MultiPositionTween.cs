@@ -484,11 +484,19 @@ namespace Common.UniTaskAnimations.SimpleTweens
         #region Editor
 
 #if UNITY_EDITOR
+        private static float _oldGenerateTime;
+        
+        private void OnEnable()
+        {
+            CreatePoints();
+        }
+        
         [UnityEditor.DrawGizmo(UnityEditor.GizmoType.NonSelected | UnityEditor.GizmoType.Selected)]
         private static void OnDrawGizmo(TweenComponent component, UnityEditor.GizmoType gizmoType)
         {
             if (component.Tween is MultiPositionTween multiPositionTween)
             {
+                Recalculate(multiPositionTween);
                 DrawGizmos(multiPositionTween);
                 return;
             }
@@ -503,6 +511,15 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     }
                 }
             }
+        }
+        
+        private static void Recalculate(MultiPositionTween multiPositionTween)
+        {
+            var curTime = (float) UnityEditor.EditorApplication.timeSinceStartup;
+            if (Application.isPlaying) return;
+            if (Math.Abs(curTime - _oldGenerateTime) < Settings.Instance.GizmosUpdateInterval) return;
+            _oldGenerateTime = curTime;
+            multiPositionTween.CreatePoints();
         }
 
         private static void DrawGizmos(MultiPositionTween multiPositionTween)
@@ -642,7 +659,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
         public override void OnGuiChange()
         {
-            if (tweenObject != null) RectTransform = tweenObject.transform as RectTransform;
+            RectTransform = tweenObject.transform as RectTransform;
             CreatePoints();
             base.OnGuiChange();
         }

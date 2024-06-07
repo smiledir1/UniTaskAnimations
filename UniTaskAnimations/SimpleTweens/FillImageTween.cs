@@ -175,6 +175,16 @@ namespace Common.UniTaskAnimations.SimpleTweens
         }
 
         #endregion /Animation
+        
+#if UNITY_EDITOR
+        
+        public override void OnGuiChange()
+        {
+            tweenImage = tweenObject.GetComponent<Image>();
+            base.OnGuiChange();
+        }
+
+#endif
 
         #region Static
 
