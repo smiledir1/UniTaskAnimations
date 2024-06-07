@@ -47,6 +47,11 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
             var toCopyButtonRect = new Rect(buttonX2, y, buttonWidth, height);
             if (GUI.Button(toCopyButtonRect, "Copy From OBJ")) ToCopyColor();
             y += height;
+            
+            var ignoreAlphaRect = new Rect(x, y, partWidth, height);
+            var ignoreAlphaProperty = property.FindPropertyRelative("ignoreAlpha");
+            EditorGUI.PropertyField(ignoreAlphaRect, ignoreAlphaProperty);
+            y += height;
 
             var tweenGraphicRect = new Rect(x, y, width, height);
             var tweenGraphicProperty = property.FindPropertyRelative("tweenGraphic");
@@ -56,7 +61,7 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
             return y - propertyRect.y;
         }
          
-        protected override float DrawTweenPropertiesHeight(SerializedProperty property) => LineHeight * 4;
+        protected override float DrawTweenPropertiesHeight(SerializedProperty property) => LineHeight * 5;
 
         private void FromGotoColor()
         {

@@ -215,6 +215,10 @@ namespace Common.UniTaskAnimations
                     ColorSpriteRendererTween.Clone(colorSpriteRendererTween, targetObject),
                 TransparencyColorImageTween transparencyColorImageTween =>
                     TransparencyColorImageTween.Clone(transparencyColorImageTween, targetObject),
+                TransparencyColorSpriteRendererTween transparencyColorSpriteRendererTween =>
+                    TransparencyColorSpriteRendererTween.Clone(transparencyColorSpriteRendererTween, targetObject),
+                OrderInLayerSpriteRendererTween orderInLayerSpriteRendererTween =>
+                    OrderInLayerSpriteRendererTween.Clone(orderInLayerSpriteRendererTween, targetObject),
                 _ => null
             };
 

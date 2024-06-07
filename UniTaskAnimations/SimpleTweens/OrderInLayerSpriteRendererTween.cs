@@ -1,68 +1,63 @@
-﻿using System;
+using UnityEngine;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 namespace Common.UniTaskAnimations.SimpleTweens
 {
-    [Serializable]
-    public class ColorSpriteRendererTween : SimpleTween
+    public class OrderInLayerSpriteRendererTween : SimpleTween
     {
         #region View
 
         [SerializeField]
-        private Color fromColor;
+        private int fromOrder;
 
         [SerializeField]
-        private Color toColor;
-        
-        [SerializeField]
-        private bool ignoreAlpha;
+        private int toOrder;
 
         [SerializeField]
         private SpriteRenderer tweenGraphic;
 
         #endregion /View
-        
+
         #region Properties
 
-        public Color FromColor => fromColor;
-        public Color ToColor => toColor;
-        public SpriteRenderer TweenGraphic => tweenGraphic;
+        public int FromOrder => fromOrder;
+        public int ToOrder => toOrder;
+        public SpriteRenderer TweenObjectRenderer => tweenGraphic;
 
         #endregion
-        
+
         #region Constructor
 
-        public ColorSpriteRendererTween()
+        public OrderInLayerSpriteRendererTween()
         {
-            fromColor = Color.white;
-            toColor = Color.black;
+            fromOrder = 0;
+            toOrder = 0;
         }
 
-        public ColorSpriteRendererTween(
+        public OrderInLayerSpriteRendererTween(
             GameObject tweenObject,
             float startDelay,
             float tweenTime,
             LoopType loop,
             AnimationCurve animationCurve,
             SpriteRenderer tweenGraphic,
-            Color fromColor,
-            Color toColor) :
+            int fromOrder,
+            int toOrder) :
             base(tweenObject,
                 startDelay,
                 tweenTime,
                 loop,
                 animationCurve)
         {
-            this.fromColor = fromColor;
-            this.toColor = toColor;
+            this.fromOrder = fromOrder;
+            this.toOrder = toOrder;
             this.tweenGraphic = tweenGraphic;
         }
 
-        #endregion
-        
-         #region Animation
+        #endregion /Constructor
+
+        #region Animation
 
         protected override async UniTask Tween(
             bool reverse = false,
@@ -75,8 +70,8 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 if (tweenGraphic == null) return;
             }
 
-            Color startColor;
-            Color endColor;
+            int startOrder;
+            int endOrder;
             AnimationCurve curve;
             var curTweenTime = TweenTime;
             if (Loop == LoopType.PingPong) curTweenTime /= 2;
@@ -85,53 +80,44 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
             if (reverse)
             {
-                startColor = toColor;
-                endColor = fromColor;
+                startOrder = toOrder;
+                endOrder = fromOrder;
                 curve = ReverseCurve;
             }
             else
             {
-                startColor = fromColor;
-                endColor = toColor;
+                startOrder = fromOrder;
+                endOrder = toOrder;
                 curve = AnimationCurve;
             }
 
             if (startFromCurrentValue)
             {
-                var localColor = tweenGraphic.color;
-                var t = 1f;
-                if (endColor.r - startColor.r != 0f)
-                    t = (localColor.r - startColor.r) / (endColor.r - startColor.r);
-                else if (endColor.g - startColor.g != 0f)
-                    t = (localColor.g - startColor.g) / (endColor.g - startColor.g);
-                else if (endColor.b - startColor.b != 0f)
-                    t = (localColor.b - startColor.b) / (endColor.b - startColor.b);
-
-                else if (endColor.a - startColor.a != 0f)
-                    t = (localColor.a - startColor.a) / (endColor.a - startColor.a);
-
+                var currentValue = tweenGraphic.sortingOrder;
+                var t = (currentValue - startOrder) / (endOrder - startOrder);
                 time = curTweenTime * t;
             }
 
             while (curLoop)
             {
-                tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(startColor) : startColor;
+                tweenGraphic.sortingOrder = startOrder;
 
                 while (time < curTweenTime)
                 {
                     time += GetDeltaTime();
 
                     var normalizeTime = time / curTweenTime;
-                    GoToValue(startColor, endColor, curve, normalizeTime);
+                    GoToValue(startOrder, endOrder, curve, normalizeTime);
                     if (cancellationToken.IsCancellationRequested) return;
                     await UniTask.Yield();
                 }
 
                 var lastKeyIndex = AnimationCurve.keys.Length - 1;
                 var lastKey = AnimationCurve.keys[lastKeyIndex];
-                var endValue = Color.LerpUnclamped(startColor, endColor, lastKey.value);
-                tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(endValue) : endValue;
-                time -= TweenTime;
+                var endValue = Mathf.LerpUnclamped(startOrder, endOrder, lastKey.value);
+                var lerpRoundValue = Mathf.RoundToInt(endValue);
+                tweenGraphic.sortingOrder = lerpRoundValue;
+                time -= curTweenTime;
 
                 switch (Loop)
                 {
@@ -143,8 +129,9 @@ namespace Common.UniTaskAnimations.SimpleTweens
                         break;
 
                     case LoopType.PingPong:
-                        endColor = startColor;
-                        startColor = tweenGraphic.color;
+                        if (tweenGraphic == null) return;
+                        endOrder = startOrder;
+                        startOrder = tweenGraphic.sortingOrder;
                         break;
                 }
             }
@@ -153,66 +140,63 @@ namespace Common.UniTaskAnimations.SimpleTweens
         public override void ResetValues()
         {
             if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<SpriteRenderer>();
-            tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(fromColor) : fromColor;
+            tweenGraphic.sortingOrder = fromOrder;
         }
 
         public override void EndValues()
         {
             if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<SpriteRenderer>();
-            tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(toColor) : toColor;
+            tweenGraphic.sortingOrder = toOrder;
         }
-        
+
         public override void SetTimeValue(float value)
         {
             if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<SpriteRenderer>();
-            GoToValue(fromColor, toColor, AnimationCurve, value);
+            GoToValue(FromOrder, ToOrder, AnimationCurve, value);
         }
 
-        public void SetColor(Color from, Color to)
+        public void SetOrder(int from, int to)
         {
-            fromColor = from;
-            toColor = to;
+            fromOrder = from;
+            toOrder = to;
         }
-        
-        private Color GetIgnoreAlphaColor(Color color) =>
-            new(color.r, color.g, color.b, tweenGraphic.color.a);
-        
-        private void GoToValue(Color startColor, Color endColor, AnimationCurve curve, float value)
+
+        private void GoToValue(float startOrder, float endOrder, AnimationCurve curve, float value)
         {
             var lerpTime = curve?.Evaluate(value) ?? value;
-            var lerpValue = Color.LerpUnclamped(startColor, endColor, lerpTime);
-
+            var lerpValue = Mathf.LerpUnclamped(startOrder, endOrder, lerpTime);
+            var lerpRoundValue = Mathf.RoundToInt(lerpValue);
             if (tweenGraphic == null) return;
-            tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(lerpValue) : lerpValue;
+            tweenGraphic.sortingOrder = lerpRoundValue;
         }
 
         #endregion /Animation
 
         #region Static
 
-        public static ColorSpriteRendererTween Clone(
-            ColorSpriteRendererTween tween,
+        public static OrderInLayerSpriteRendererTween Clone(
+            OrderInLayerSpriteRendererTween tween,
             GameObject targetObject = null)
         {
-            SpriteRenderer tweenImage = null;
+            SpriteRenderer tweenRenderer = null;
             if (targetObject != null)
             {
-                tweenImage = targetObject.GetComponent<SpriteRenderer>();
-                if (tweenImage == null) targetObject.AddComponent<SpriteRenderer>();
+                tweenRenderer = targetObject.GetComponent<SpriteRenderer>();
+                if (tweenRenderer == null) targetObject.AddComponent<SpriteRenderer>();
             }
 
             var animationCurve = new AnimationCurve();
             animationCurve.CopyFrom(tween.AnimationCurve);
 
-            return new ColorSpriteRendererTween(
+            return new OrderInLayerSpriteRendererTween(
                 targetObject,
                 tween.StartDelay,
                 tween.TweenTime,
                 tween.Loop,
                 animationCurve,
-                tweenImage,
-                tween.FromColor,
-                tween.ToColor);
+                tweenRenderer,
+                tween.FromOrder,
+                tween.ToOrder);
         }
 
         #endregion

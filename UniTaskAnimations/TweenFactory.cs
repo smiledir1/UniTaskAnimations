@@ -50,6 +50,8 @@ namespace Common.UniTaskAnimations
                 nameof(MultiPositionTween) => CreateMultiPositionTween(tweenObject),
                 nameof(ColorSpriteRendererTween) => CreateColorSpriteRendererTween(tweenObject),
                 nameof(TransparencyColorImageTween) => CreateTransparencyColorImageTween(tweenObject),
+                nameof(TransparencyColorSpriteRendererTween) => CreateTransparencySpriteRendererImageTween(tweenObject),
+                nameof(OrderInLayerSpriteRendererTween) => CreateOrderInLayerSpriteRendererTween(tweenObject),
                 _ => null
             };
         }
@@ -289,6 +291,51 @@ namespace Common.UniTaskAnimations
                 0,
                 1);
         }
+        
+        public static SimpleTween CreateTransparencySpriteRendererImageTween(GameObject tweenObject = null)
+        {
+            var renderer = tweenObject == null ? null : tweenObject.GetComponent<SpriteRenderer>();
+            if (renderer == null && tweenObject != null)
+            {
+                renderer = tweenObject.gameObject.AddComponent<SpriteRenderer>();
+                renderer.color = Color.white;
+            }
+
+            var animationCurve = new AnimationCurve();
+            animationCurve.CopyFrom(AnimationCurve);
+            return new TransparencyColorSpriteRendererTween(
+                tweenObject,
+                StartDelay,
+                TweenTime,
+                Loop,
+                animationCurve,
+                renderer,
+                0,
+                1);
+        }
+        
+        public static SimpleTween CreateOrderInLayerSpriteRendererTween(GameObject tweenObject = null)
+        {
+            var renderer = tweenObject == null ? null : tweenObject.GetComponent<SpriteRenderer>();
+            if (renderer == null && tweenObject != null)
+            {
+                renderer = tweenObject.gameObject.AddComponent<SpriteRenderer>();
+                renderer.color = Color.white;
+            }
+
+            var animationCurve = new AnimationCurve();
+            animationCurve.CopyFrom(AnimationCurve);
+            return new OrderInLayerSpriteRendererTween(
+                tweenObject,
+                StartDelay,
+                TweenTime,
+                Loop,
+                animationCurve,
+                renderer,
+                0,
+                0);
+        }
+
 
         #endregion
     }

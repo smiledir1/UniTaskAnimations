@@ -159,7 +159,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
         public override void ResetValues()
         {
             if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<Graphic>();
-            tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(fromColor) : toColor;
+            tweenGraphic.color = ignoreAlpha ? GetIgnoreAlphaColor(fromColor) : fromColor;
         }
 
         public override void EndValues()
