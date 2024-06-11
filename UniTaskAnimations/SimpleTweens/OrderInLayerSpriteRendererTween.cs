@@ -112,6 +112,8 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     await UniTask.Yield();
                 }
 
+                if (cancellationToken.IsCancellationRequested) return;
+                if (tweenGraphic == null) return;
                 var lastKeyIndex = AnimationCurve.keys.Length - 1;
                 var lastKey = AnimationCurve.keys[lastKeyIndex];
                 var endValue = Mathf.LerpUnclamped(startOrder, endOrder, lastKey.value);

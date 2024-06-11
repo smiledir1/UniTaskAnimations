@@ -111,10 +111,12 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     await UniTask.Yield();
                 }
 
+                if (cancellationToken.IsCancellationRequested) return;
+                if (TweenObject == null) return;
                 var lastKeyIndex = AnimationCurve.keys.Length - 1;
                 var lastKey = AnimationCurve.keys[lastKeyIndex];
                 var endValue = Vector3.LerpUnclamped(startRotation, endRotation, lastKey.value);
-                if (TweenObject != null) TweenObject.transform.eulerAngles = endValue;
+                TweenObject.transform.eulerAngles = endValue;
                 time -= curTweenTime;
 
                 switch (Loop)

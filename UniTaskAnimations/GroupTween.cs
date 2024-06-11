@@ -26,6 +26,8 @@ namespace Common.UniTaskAnimations
         public List<TweenComponent> Components => components;
         public float StartDelay => startDelay;
         public bool IsActiveAnimation => _currentToken != null;
+        public float Length => StartDelay + CalculateTweenTime();
+        public float TweenTime => CalculateTweenTime();
 
         private CancellationTokenSource _currentToken;
 
@@ -69,7 +71,7 @@ namespace Common.UniTaskAnimations
                         _currentToken.Token);
                 }
             }
-
+            _currentToken.Dispose();
             _currentToken = null;
         }
 
@@ -80,7 +82,7 @@ namespace Common.UniTaskAnimations
             {
                 tween?.StopAnimation().Forget();
             }
-
+            _currentToken.Dispose();
             _currentToken = null;
             return UniTask.CompletedTask;
         }
@@ -122,6 +124,32 @@ namespace Common.UniTaskAnimations
         {
             if (StartDelay > 0.001f)
                 await UniTask.Delay(TimeSpan.FromSeconds(StartDelay), cancellationToken: cancellationToken);
+        }
+
+        private float CalculateTweenTime()
+        {
+            var length = 0f;
+
+            if (parallel)
+            {
+                var maxTime = 0f;
+                for (var i = Tweens.Count - 1; i >= 0; i--)
+                {
+                    var tweenLength = Tweens[i].Length;
+                    if (tweenLength > maxTime) maxTime = tweenLength;
+                }
+
+                length += maxTime;
+            }
+            else
+            {
+                for (var i = Tweens.Count - 1; i >= 0; i--)
+                {
+                    length += Tweens[i].Length;
+                }
+            }
+
+            return length;
         }
     }
 }

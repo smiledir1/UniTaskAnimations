@@ -85,6 +85,7 @@ namespace Common.UniTaskAnimations
 
         #region Animation
 
+        public float Length => StartDelay + TweenTime;
         public bool IsActiveAnimation => CancellationTokenSource != null;
 
         public GameObject TweenObject => tweenObject;
@@ -142,6 +143,7 @@ namespace Common.UniTaskAnimations
             PrevTime = UnityEditor.EditorApplication.timeSinceStartup;
 #endif
             await Tween(reverse, startFromCurrentValue, CancellationTokenSource.Token);
+            CancellationTokenSource.Dispose();
             CancellationTokenSource = null;
         }
 
@@ -150,6 +152,7 @@ namespace Common.UniTaskAnimations
             if (CancellationTokenSource != null)
             {
                 CancellationTokenSource.Cancel();
+                CancellationTokenSource.Dispose();
                 CancellationTokenSource = null;
                 await UniTask.Yield();
             }

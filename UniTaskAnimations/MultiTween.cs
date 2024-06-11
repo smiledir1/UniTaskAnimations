@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Common.UniTaskAnimations
 {
+    //TODO: Complete animation type
     [Serializable]
     public class MultiTween : IBaseTween
     {
@@ -23,6 +24,8 @@ namespace Common.UniTaskAnimations
         public ITween CurTween => Tween;
         //TODO:
         public bool IsActiveAnimation => false;
+        //TODO:
+        public float Length => 0f;
 
         private List<ITween> _animations = new();
 

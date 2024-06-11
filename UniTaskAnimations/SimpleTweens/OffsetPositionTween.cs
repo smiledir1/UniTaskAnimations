@@ -117,6 +117,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     await UniTask.Yield();
                 }
 
+                if (cancellationToken.IsCancellationRequested) return;
                 if (TweenObject != null && TweenObject.transform != null)
                     TweenObject.transform.localPosition = endPosition;
                 time -= endTweenTime;

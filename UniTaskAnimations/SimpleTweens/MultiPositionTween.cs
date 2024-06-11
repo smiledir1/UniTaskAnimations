@@ -228,6 +228,8 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     await UniTask.Yield();
                 }
 
+                if (cancellationToken.IsCancellationRequested) return;
+                if (TweenObject == null) return;
                 GoToPosition(toPosition);
                 time -= curTweenTime;
 

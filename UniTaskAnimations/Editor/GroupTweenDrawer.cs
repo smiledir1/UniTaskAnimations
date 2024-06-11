@@ -41,38 +41,42 @@ namespace Common.UniTaskAnimations.Editor
             if (Math.Abs(_currentSliderValue - sliderValue) > 0.0001f)
             {
                 _currentSliderValue = sliderValue;
-                //TODO: make for subGroups
-                if (property.managedReferenceValue is GroupTween targetTween)
+
+                void SetTimeValueForGroup(GroupTween targetTween, float currentSliderValue)
                 {
                     if (targetTween.Parallel)
                     {
                         var maxTime = 0f;
                         foreach (var tween in targetTween.Tweens)
                         {
-                            if (tween is not SimpleTween simpleTween) continue;
-                            var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
-                            if (maxTime < fullTime) maxTime = fullTime;
+                            if (maxTime < tween.Length) maxTime = tween.Length;
                         }
 
-                        var currentTime = maxTime * _currentSliderValue;
+                        var currentTime = maxTime * currentSliderValue;
                         foreach (var tween in targetTween.Tweens)
                         {
-                            if (tween is not SimpleTween simpleTween) continue;
-                            if (currentTime < simpleTween.StartDelay)
+                            if (tween is GroupTween groupTween)
                             {
-                                simpleTween.SetTimeValue(0f);
-                                continue;
+                                SetTimeValueForGroup(groupTween, currentSliderValue);
                             }
-
-                            var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
-                            if (currentTime > fullTime)
+                            
+                            if (tween is SimpleTween simpleTween)
                             {
-                                simpleTween.SetTimeValue(1f);
-                                continue;
-                            }
+                                if (currentTime < simpleTween.StartDelay)
+                                {
+                                    simpleTween.SetTimeValue(0f);
+                                    continue;
+                                }
 
-                            var currentValue = (currentTime - simpleTween.StartDelay) / simpleTween.TweenTime;
-                            simpleTween.SetTimeValue(currentValue);
+                                if (currentTime > tween.Length)
+                                {
+                                    simpleTween.SetTimeValue(1f);
+                                    continue;
+                                }
+
+                                var currentValue = (currentTime - simpleTween.StartDelay) / simpleTween.TweenTime;
+                                simpleTween.SetTimeValue(currentValue);
+                            }
                         }
                     }
                     else
@@ -80,36 +84,126 @@ namespace Common.UniTaskAnimations.Editor
                         var maxTime = 0f;
                         foreach (var tween in targetTween.Tweens)
                         {
-                            if (tween is not SimpleTween simpleTween) continue;
-                            var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
-                            maxTime += fullTime;
+                            maxTime += tween.Length;
                         }
 
                         var subTime = 0f;
-                        var currentTime = maxTime * _currentSliderValue;
+                        var currentTime = maxTime * currentSliderValue;
                         foreach (var tween in targetTween.Tweens)
                         {
-                            if (tween is not SimpleTween simpleTween) continue;
                             var startTweenTime = subTime;
-                            var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
-                            subTime += fullTime;
-                            if (currentTime < startTweenTime)
+                            subTime += tween.Length;
+                            
+                            if (tween is GroupTween groupTween)
                             {
-                                simpleTween.SetTimeValue(0f);
-                                continue;
+                                if (currentTime < startTweenTime)
+                                {
+                                    SetTimeValueForGroup(groupTween, 0f);
+                                }
+
+                                if (currentTime > subTime)
+                                {
+                                    SetTimeValueForGroup(groupTween, 1f);
+                                    continue;
+                                }
+                                
+                                var currentValue = (currentTime - groupTween.StartDelay - startTweenTime)
+                                                   / groupTween.TweenTime;
+                                SetTimeValueForGroup(groupTween, currentValue);
                             }
 
-                            if (currentTime > subTime)
+                            if (tween is SimpleTween simpleTween)
                             {
-                                simpleTween.SetTimeValue(1f);
-                                continue;
-                            }
+                                if (currentTime < startTweenTime)
+                                {
+                                    simpleTween.SetTimeValue(0f);
+                                    continue;
+                                }
 
-                            var currentValue = (currentTime - simpleTween.StartDelay - startTweenTime)
-                                               / simpleTween.TweenTime;
-                            simpleTween.SetTimeValue(currentValue);
+                                if (currentTime > subTime)
+                                {
+                                    simpleTween.SetTimeValue(1f);
+                                    continue;
+                                }
+
+                                var currentValue = (currentTime - simpleTween.StartDelay - startTweenTime)
+                                                   / simpleTween.TweenTime;
+                                simpleTween.SetTimeValue(currentValue);
+                            }
                         }
                     }
+                }
+                
+                //TODO: make for subGroups
+                if (property.managedReferenceValue is GroupTween targetTween)
+                {
+                    SetTimeValueForGroup(targetTween, _currentSliderValue);
+                    // if (targetTween.Parallel)
+                    // {
+                    //     var maxTime = 0f;
+                    //     foreach (var tween in targetTween.Tweens)
+                    //     {
+                    //         if (tween is not SimpleTween simpleTween) continue;
+                    //         var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
+                    //         if (maxTime < fullTime) maxTime = fullTime;
+                    //     }
+                    //
+                    //     var currentTime = maxTime * _currentSliderValue;
+                    //     foreach (var tween in targetTween.Tweens)
+                    //     {
+                    //         if (tween is not SimpleTween simpleTween) continue;
+                    //         if (currentTime < simpleTween.StartDelay)
+                    //         {
+                    //             simpleTween.SetTimeValue(0f);
+                    //             continue;
+                    //         }
+                    //
+                    //         var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
+                    //         if (currentTime > fullTime)
+                    //         {
+                    //             simpleTween.SetTimeValue(1f);
+                    //             continue;
+                    //         }
+                    //
+                    //         var currentValue = (currentTime - simpleTween.StartDelay) / simpleTween.TweenTime;
+                    //         simpleTween.SetTimeValue(currentValue);
+                    //     }
+                    // }
+                    // else
+                    // {
+                    //     var maxTime = 0f;
+                    //     foreach (var tween in targetTween.Tweens)
+                    //     {
+                    //         if (tween is not SimpleTween simpleTween) continue;
+                    //         var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
+                    //         maxTime += fullTime;
+                    //     }
+                    //
+                    //     var subTime = 0f;
+                    //     var currentTime = maxTime * _currentSliderValue;
+                    //     foreach (var tween in targetTween.Tweens)
+                    //     {
+                    //         if (tween is not SimpleTween simpleTween) continue;
+                    //         var startTweenTime = subTime;
+                    //         var fullTime = simpleTween.StartDelay + simpleTween.TweenTime;
+                    //         subTime += fullTime;
+                    //         if (currentTime < startTweenTime)
+                    //         {
+                    //             simpleTween.SetTimeValue(0f);
+                    //             continue;
+                    //         }
+                    //
+                    //         if (currentTime > subTime)
+                    //         {
+                    //             simpleTween.SetTimeValue(1f);
+                    //             continue;
+                    //         }
+                    //
+                    //         var currentValue = (currentTime - simpleTween.StartDelay - startTweenTime)
+                    //                            / simpleTween.TweenTime;
+                    //         simpleTween.SetTimeValue(currentValue);
+                    //     }
+                    // }
                 }
             }
         }

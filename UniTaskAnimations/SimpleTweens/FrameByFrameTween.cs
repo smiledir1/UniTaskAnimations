@@ -111,6 +111,8 @@ namespace Common.UniTaskAnimations.SimpleTweens
                     await UniTask.Yield();
                 }
 
+                if (cancellationToken.IsCancellationRequested) return;
+                if (tweenImage == null) return;
                 tweenImage.sprite = sprites[toSprite];
 
                 time -= curTweenTime;

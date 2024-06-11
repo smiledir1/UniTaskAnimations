@@ -7,6 +7,7 @@ namespace Common.UniTaskAnimations
     public interface IBaseTween
     {
         public bool IsActiveAnimation { get; }
+        public float Length { get; }
         UniTask StartAnimation(
             bool reverse = false,
             bool startFromCurrentValue = false,
