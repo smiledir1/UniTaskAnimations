@@ -347,6 +347,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
         private void GoToValue(Vector3[] points, float[] lens, AnimationCurve curve, float value)
         {
             if (points.Length < 2) return;
+            if (float.IsNaN(points[0].x)) CreatePoints();
             var cur = 1;
             var lerpTime = curve?.Evaluate(value) ?? value;
 

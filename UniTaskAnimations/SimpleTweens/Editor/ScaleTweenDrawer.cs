@@ -14,7 +14,7 @@ namespace Common.UniTaskAnimations.SimpleTweens.Editor
         {
             var x = propertyRect.x;
             var y = propertyRect.y;
-            var width = EditorGUIUtility.currentViewWidth;
+            var width = propertyRect.width;
             var height = LineHeight;
 
             var partWidth = width * 2 / 3;

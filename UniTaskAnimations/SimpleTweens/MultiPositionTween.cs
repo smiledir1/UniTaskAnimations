@@ -573,7 +573,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 var point = multiPositionTween.Positions[i];
                 var pointPosition = parentPosition
                                     + GetScaledPosition(parentScale, point);
-                Gizmos.DrawSphere(pointPosition, 10f);
+                Gizmos.DrawSphere(pointPosition, Settings.Instance.GizmosSize);
             }
 
             Gizmos.color = Color.magenta;
