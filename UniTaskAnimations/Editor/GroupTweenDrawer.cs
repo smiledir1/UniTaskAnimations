@@ -41,103 +41,11 @@ namespace Common.UniTaskAnimations.Editor
             if (Math.Abs(_currentSliderValue - sliderValue) > 0.0001f)
             {
                 _currentSliderValue = sliderValue;
-
-                void SetTimeValueForGroup(GroupTween targetTween, float currentSliderValue)
-                {
-                    if (targetTween.Parallel)
-                    {
-                        var maxTime = 0f;
-                        foreach (var tween in targetTween.Tweens)
-                        {
-                            if (maxTime < tween.Length) maxTime = tween.Length;
-                        }
-
-                        var currentTime = maxTime * currentSliderValue;
-                        foreach (var tween in targetTween.Tweens)
-                        {
-                            if (tween is GroupTween groupTween)
-                            {
-                                SetTimeValueForGroup(groupTween, currentSliderValue);
-                            }
-                            
-                            if (tween is SimpleTween simpleTween)
-                            {
-                                if (currentTime < simpleTween.StartDelay)
-                                {
-                                    simpleTween.SetTimeValue(0f);
-                                    continue;
-                                }
-
-                                if (currentTime > tween.Length)
-                                {
-                                    simpleTween.SetTimeValue(1f);
-                                    continue;
-                                }
-
-                                var currentValue = (currentTime - simpleTween.StartDelay) / simpleTween.TweenTime;
-                                simpleTween.SetTimeValue(currentValue);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var maxTime = 0f;
-                        foreach (var tween in targetTween.Tweens)
-                        {
-                            maxTime += tween.Length;
-                        }
-
-                        var subTime = 0f;
-                        var currentTime = maxTime * currentSliderValue;
-                        foreach (var tween in targetTween.Tweens)
-                        {
-                            var startTweenTime = subTime;
-                            subTime += tween.Length;
-                            
-                            if (tween is GroupTween groupTween)
-                            {
-                                if (currentTime < startTweenTime)
-                                {
-                                    SetTimeValueForGroup(groupTween, 0f);
-                                }
-
-                                if (currentTime > subTime)
-                                {
-                                    SetTimeValueForGroup(groupTween, 1f);
-                                    continue;
-                                }
-                                
-                                var currentValue = (currentTime - groupTween.StartDelay - startTweenTime)
-                                                   / groupTween.TweenTime;
-                                SetTimeValueForGroup(groupTween, currentValue);
-                            }
-
-                            if (tween is SimpleTween simpleTween)
-                            {
-                                if (currentTime < startTweenTime)
-                                {
-                                    simpleTween.SetTimeValue(0f);
-                                    continue;
-                                }
-
-                                if (currentTime > subTime)
-                                {
-                                    simpleTween.SetTimeValue(1f);
-                                    continue;
-                                }
-
-                                var currentValue = (currentTime - simpleTween.StartDelay - startTweenTime)
-                                                   / simpleTween.TweenTime;
-                                simpleTween.SetTimeValue(currentValue);
-                            }
-                        }
-                    }
-                }
                 
                 //TODO: make for subGroups
                 if (property.managedReferenceValue is GroupTween targetTween)
                 {
-                    SetTimeValueForGroup(targetTween, _currentSliderValue);
+                    TweenComponentEditor.SetTimeValueForGroup(targetTween, _currentSliderValue);
                     // if (targetTween.Parallel)
                     // {
                     //     var maxTime = 0f;

@@ -143,7 +143,7 @@ namespace Common.UniTaskAnimations
             PrevTime = UnityEditor.EditorApplication.timeSinceStartup;
 #endif
             await Tween(reverse, startFromCurrentValue, CancellationTokenSource.Token);
-            CancellationTokenSource.Dispose();
+            CancellationTokenSource?.Dispose();
             CancellationTokenSource = null;
         }
 

@@ -264,7 +264,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
             RectTransform ??= tweenObject.transform as RectTransform;
             GoToPosition(positions[^1]);
         }
-        
+
         public override void SetTimeValue(float value)
         {
             RectTransform ??= tweenObject.transform as RectTransform;
@@ -293,7 +293,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 _ => Vector3.zero
             };
         }
-        
+
         private void GoToValue(Vector3[] points, float[] lens, AnimationCurve curve, float value)
         {
             if (points.Length < 2) return;
@@ -476,7 +476,9 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
         private static Vector2 Remap(float a, float b, Vector2 c,
             Vector2 d, float u) =>
-            Vector2.LerpUnclamped(c, d, (u - a) / (b - a));
+            b - a == 0 
+                ? Vector2.zero 
+                : Vector2.LerpUnclamped(c, d, (u - a) / (b - a));
 
         private float GetKnotInterval(Vector2 a, Vector2 b, float curAlpha) =>
             Mathf.Pow(Vector2.SqrMagnitude(a - b), 0.5f * curAlpha);
@@ -487,12 +489,12 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
 #if UNITY_EDITOR
         private static float _oldGenerateTime;
-        
+
         private void OnEnable()
         {
             CreatePoints();
         }
-        
+
         [UnityEditor.DrawGizmo(UnityEditor.GizmoType.NonSelected | UnityEditor.GizmoType.Selected)]
         private static void OnDrawGizmo(TweenComponent component, UnityEditor.GizmoType gizmoType)
         {
@@ -502,7 +504,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 DrawGizmos(multiPositionTween);
                 return;
             }
-            
+
             if (component.Tween is GroupTween groupTween)
             {
                 foreach (var tween in groupTween.Tweens)
@@ -514,7 +516,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
                 }
             }
         }
-        
+
         private static void Recalculate(MultiPositionTween multiPositionTween)
         {
             var curTime = (float) UnityEditor.EditorApplication.timeSinceStartup;

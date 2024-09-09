@@ -89,8 +89,9 @@ namespace Common.UniTaskAnimations
 
         public void ResetValues()
         {
-            foreach (var tween in _tweens)
+            for (var i = _tweens.Count - 1; i >= 0; i--)
             {
+                var tween = _tweens[i];
                 tween?.ResetValues();
             }
         }
