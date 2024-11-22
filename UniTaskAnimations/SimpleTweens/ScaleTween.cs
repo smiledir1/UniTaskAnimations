@@ -139,12 +139,12 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
         public override void ResetValues()
         {
-            TweenObject.transform.localScale = fromScale;
+            if (TweenObject != null) TweenObject.transform.localScale = fromScale;
         }
 
         public override void EndValues()
         {
-            TweenObject.transform.localScale = toScale;
+            if (TweenObject != null) TweenObject.transform.localScale = toScale;
         }
 
         public override void SetTimeValue(float value)
@@ -163,7 +163,7 @@ namespace Common.UniTaskAnimations.SimpleTweens
             var lerpTime = curve?.Evaluate(value) ?? value;
             var lerpValue = Vector3.LerpUnclamped(startScale, endScale, lerpTime);
 
-            TweenObject.transform.localScale = lerpValue;
+            if (TweenObject != null) TweenObject.transform.localScale = lerpValue;
         }
 
         #endregion /Animation

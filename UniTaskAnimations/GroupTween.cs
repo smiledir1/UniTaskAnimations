@@ -77,12 +77,12 @@ namespace Common.UniTaskAnimations
 
         public UniTask StopAnimation()
         {
-            _currentToken.Cancel();
+            _currentToken?.Cancel();
             foreach (var tween in _tweens)
             {
                 tween?.StopAnimation().Forget();
             }
-            _currentToken.Dispose();
+            _currentToken?.Dispose();
             _currentToken = null;
             return UniTask.CompletedTask;
         }
