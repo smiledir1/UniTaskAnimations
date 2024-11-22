@@ -71,8 +71,11 @@ namespace Common.UniTaskAnimations.SimpleTweens
         {
             if (tweenGraphic == null)
             {
-                tweenGraphic = tweenObject.GetComponent<Graphic>();
-                if (tweenGraphic == null) return;
+                if (tweenObject != null)
+                {
+                    tweenGraphic = tweenObject.GetComponent<Graphic>();
+                    if (tweenGraphic == null) return;
+                }
             }
 
             float startOpacity;
@@ -145,20 +148,29 @@ namespace Common.UniTaskAnimations.SimpleTweens
 
         public override void ResetValues()
         {
-            if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<Graphic>();
-            tweenGraphic.color = GetColorWithAlpha(fromOpacity);
+            if (TweenObject != null)
+            {
+                if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<Graphic>();
+                tweenGraphic.color = GetColorWithAlpha(fromOpacity);
+            }
         }
 
         public override void EndValues()
         {
-            if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<Graphic>();
-            tweenGraphic.color = GetColorWithAlpha(toOpacity);
+            if (TweenObject != null)
+            {
+                if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<Graphic>();
+                tweenGraphic.color = GetColorWithAlpha(toOpacity);
+            }
         }
         
         public override void SetTimeValue(float value)
         {
-            if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<Graphic>();
-            GoToValue(FromOpacity, ToOpacity, AnimationCurve, value);
+            if (TweenObject != null)
+            {
+                if (tweenGraphic == null) tweenGraphic = TweenObject.GetComponent<Graphic>();
+                GoToValue(FromOpacity, ToOpacity, AnimationCurve, value);
+            }
         }
 
         public void SetTransparency(float from, float to)
